@@ -1,8 +1,15 @@
+import 'babel-polyfill'
 import findEmails from 'utils/findEmails'
+import validateEmails from 'utils/validateEmails'
+import createAccountVariations from 'utils/createAccountVariations'
+import validateDomain from 'utils/validateDomain'
+import getMailServers from 'utils/getMailServers'
 
-(async function () {
-  const domain = 'kriek.hu'
-  const name = 'peter gombos'
-  const emails = await findEmails(name, domain)
-  console.log(emails)
-})().catch(console.log)
+export {
+  validateEmails,
+  createAccountVariations,
+  validateDomain,
+  getMailServers
+}
+
+export default findEmails

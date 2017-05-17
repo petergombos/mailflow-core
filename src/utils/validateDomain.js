@@ -19,6 +19,7 @@ const validateDomain = async (domain, {
       const err = new Error('Server is not cooperating.')
       err.response = res
       err.tested = host
+      err.code = 'SERVER'
       return Promise.reject(err)
     }
   }
@@ -26,8 +27,9 @@ const validateDomain = async (domain, {
   const catchAllHandler = async (res, info) => {
     if (info.isLast && info.code !== '550') {
       await smtp.write('QUIT\r\n')
-      const err = new Error('Domain has catch-all found.')
+      const err = new Error('Domain has catch-all.')
       err.tested = host
+      err.code = 'CATCHALL'
       return Promise.reject(err)
     }
   }
