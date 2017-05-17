@@ -1,7 +1,8 @@
-import validateDomain from 'utils/validateDomain'
+import findEmails from 'utils/findEmails'
 
 (async function () {
-  const domain = 'fidesz.hu'
-  const validation = await validateDomain(domain)
-  console.log(validation)
+  const domain = 'kriek.hu'
+  const name = 'peter gombos'
+  const emails = await findEmails(name, domain)
+  console.log(emails)
 })().catch(console.log)
