@@ -31,8 +31,8 @@ const validateEmails = async (emails, host, {
   }
 
   const validAddresses = []
-  const isAccepted = (res, { code } = {}, email) => {
-    if (code === '250' || code === '450') {
+  const isAccepted = (res, { code, isLast } = {}, email) => {
+    if (isLast && (code === '250' || code === '450')) {
       validAddresses.push(email)
     }
   }
