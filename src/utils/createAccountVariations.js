@@ -45,6 +45,7 @@ const createAccountVariations = (name) => {
   for (let i = 0; i < variations.length; i++) {
     addresses.push(variations[i].join(''))
     addresses.push(variations[i].join('.'))
+    addresses.push(variations[i].join('_'))
   }
 
   return _.sortBy(_.uniq(addresses), (o) => o.length).reverse()
