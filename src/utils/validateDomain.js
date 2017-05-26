@@ -6,16 +6,26 @@ const validateDomain = async (domain, {
   port = 25,
   fdqn = 'mailflow.io',
   sender = 'info@mailflow.io',
-  timeout = 5000
+  timeout = 5000,
+  verbose = false
 } = {}) => {
   const hosts = await getMailServers(domain)
   const host = _.sortBy(hosts, o => o.priority).map(o => o.exchange)[0]
 
   const smtp = new SMTPChannel({ host, port })
 
+  const write = (command, options = {}, verbose) => {
+    if (verbose) {
+      console.log(command)
+    }
+    return smtp.write(command, options)
+  }
+
   const handler = async (res, info) => {
+    if (verbose) {
+      console.log(res, info.code)
+    }
     if (info.isLast && info.code.charAt(0) !== '2') {
-      await smtp.write('QUIT\r\n')
       const err = new Error('Server is not cooperating.')
       err.response = res
       err.tested = host
@@ -25,8 +35,11 @@ const validateDomain = async (domain, {
   }
 
   const catchAllHandler = async (res, info) => {
+    if (verbose) {
+      console.log(res, info.code)
+    }
     if (info.isLast && info.code !== '550') {
-      await smtp.write('QUIT\r\n')
+      await write('QUIT\r\n')
       const err = new Error('Domain has catch-all.')
       err.tested = host
       err.code = 'CATCHALL'
@@ -35,10 +48,10 @@ const validateDomain = async (domain, {
   }
 
   await smtp.connect({ handler, timeout })
-  await smtp.write(`EHLO ${fdqn}\r\n`, { handler })
-  await smtp.write(`MAIL FROM:<${sender}>\r\n`, { handler })
-  await smtp.write(`RCPT TO:<sdfjhskdjhkfshkspepe@${domain}>\r\n`, { handler: catchAllHandler })
-  await smtp.write('QUIT\r\n', { handler })
+  await write(`EHLO ${fdqn}\r\n`, { handler })
+  await write(`MAIL FROM:<${sender}>\r\n`, { handler })
+  await write(`RCPT TO:<sdfjhskdjhkfshkspepe@${domain}>\r\n`, { handler: catchAllHandler })
+  await write('QUIT\r\n', { handler })
 
   return Promise.resolve({
     message: 'MX server is accepting connections, catch-all not found.',

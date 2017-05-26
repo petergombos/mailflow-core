@@ -9,7 +9,8 @@ export {
   validateEmails,
   createAccountVariations,
   validateDomain,
-  getMailServers
+  getMailServers,
+  findEmails
 }
 
 export default findEmails
